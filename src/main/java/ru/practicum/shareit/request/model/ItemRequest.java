@@ -1,20 +1,20 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.request.model;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 /**
- * TODO Sprint add-controllers.
+ * TODO Sprint add-item-requests.
  */
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Item {
+public class ItemRequest {
     Long id;
-    String name;
     String description;
-    Boolean available;
-    Long owner;
-    Long request;
+    Long requestor;
+    LocalDateTime created;
 }
