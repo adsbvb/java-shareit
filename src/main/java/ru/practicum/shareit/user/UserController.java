@@ -36,7 +36,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserDto update(
-            @PathVariable(name="userId") Long userId,
+            @PathVariable(name = "userId") Long userId,
             @RequestBody @Validated(PatchUpdateGroup.class) UserDto userDto
     ) {
         User user = UserMapper.mapToUser(userDto);
@@ -47,7 +47,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public void delete(
-            @PathVariable(name="userId") Long userId
+            @PathVariable(name = "userId") Long userId
     ) {
         userService.deleteUser(userId);
         log.info("User with id {} was deleted", userId);
@@ -55,7 +55,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public UserDto getById(
-            @PathVariable(name="userId") Long userId
+            @PathVariable(name = "userId") Long userId
     ) {
         User user = userService.getUserById(userId);
         log.info("User with id {} was fetched", userId);

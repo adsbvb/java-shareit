@@ -39,7 +39,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto update(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PathVariable(name="itemId") Long itemId,
+            @PathVariable(name = "itemId") Long itemId,
             @RequestBody @Validated(PatchUpdateGroup.class) ItemDto itemDto
     ) throws AccessDeniedException {
         Item item = ItemMapper.mapToItem(itemDto);
@@ -51,7 +51,7 @@ public class ItemController {
     @DeleteMapping("/{itemId}")
     public void delete(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PathVariable(name="itemId") Long itemId
+            @PathVariable(name = "itemId") Long itemId
     ) {
         itemService.deleteItem(userId, itemId);
         log.info("Deleted item id {} by user id {}", itemId, userId);
@@ -59,7 +59,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDto getById(
-            @PathVariable(name="itemId") Long itemId
+            @PathVariable(name = "itemId") Long itemId
     ) {
         Item item = itemService.getItemById(itemId);
         log.info("Received item: {}", item);
