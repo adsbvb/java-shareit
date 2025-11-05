@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -13,14 +14,11 @@ import ru.practicum.shareit.error.validation.PatchUpdateGroup;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Slf4j
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
     private final UserService userService;
 
@@ -36,7 +34,7 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public UserDto update(
-            @PathVariable(name = "userId") Long userId,
+            @PathVariable(name = "userId") @Positive(message = "User id must be a positive number") Long userId,
             @RequestBody @Validated(PatchUpdateGroup.class) UserDto userDto
     ) {
         User user = UserMapper.mapToUser(userDto);
@@ -47,7 +45,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public void delete(
-            @PathVariable(name = "userId") Long userId
+            @PathVariable(name = "userId") @Positive(message = "User id must be a positive number") Long userId
     ) {
         userService.deleteUser(userId);
         log.info("User with id {} was deleted", userId);
@@ -55,7 +53,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public UserDto getById(
-            @PathVariable(name = "userId") Long userId
+            @PathVariable(name = "userId") @Positive(message = "User id must be a positive number") Long userId
     ) {
         User user = userService.getUserById(userId);
         log.info("User with id {} was fetched", userId);

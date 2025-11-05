@@ -6,10 +6,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
-
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Booking {

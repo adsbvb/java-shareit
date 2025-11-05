@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -14,20 +15,17 @@ import ru.practicum.shareit.item.service.ItemService;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Slf4j
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
     public ItemDto add(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId,
             @RequestBody @Validated(CreateGroup.class) ItemDto itemDto
     ) {
         Item item = ItemMapper.mapToItem(itemDto);
@@ -38,8 +36,8 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemDto update(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PathVariable(name = "itemId") Long itemId,
+            @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId,
+            @PathVariable(name = "itemId") @Positive(message = "Item id must be a positive number") Long itemId,
             @RequestBody @Validated(PatchUpdateGroup.class) ItemDto itemDto
     ) throws AccessDeniedException {
         Item item = ItemMapper.mapToItem(itemDto);
@@ -50,8 +48,8 @@ public class ItemController {
 
     @DeleteMapping("/{itemId}")
     public void delete(
-            @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PathVariable(name = "itemId") Long itemId
+            @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId,
+            @PathVariable(name = "itemId") @Positive(message = "Item id must be a positive number") Long itemId
     ) {
         itemService.deleteItem(userId, itemId);
         log.info("Deleted item id {} by user id {}", itemId, userId);
@@ -59,7 +57,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDto getById(
-            @PathVariable(name = "itemId") Long itemId
+            @PathVariable(name = "itemId") @Positive(message = "Item id must be a positive number") Long itemId
     ) {
         Item item = itemService.getItemById(itemId);
         log.info("Received item: {}", item);
@@ -68,7 +66,7 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getAll(
-            @RequestHeader("X-Sharer-User-Id") Long userId
+            @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId
     ) {
         List<Item> items = itemService.getAllItems(userId);
         log.info("Found {} items", items.size());

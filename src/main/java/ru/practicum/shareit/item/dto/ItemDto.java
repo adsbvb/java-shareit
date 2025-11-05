@@ -13,10 +13,6 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.error.validation.CreateGroup;
 import ru.practicum.shareit.error.validation.PatchUpdateGroup;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
