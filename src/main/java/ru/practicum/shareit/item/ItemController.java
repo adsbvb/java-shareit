@@ -5,11 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.error.validation.CreateGroup;
-import ru.practicum.shareit.error.validation.PatchUpdateGroup;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.nio.file.AccessDeniedException;
@@ -24,65 +20,65 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto add(
+    public ItemResponseDto add(
             @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId,
-            @RequestBody @Validated(CreateGroup.class) ItemDto itemDto
+            @RequestBody @Validated ItemCreateDto itemDto
     ) {
-        Item item = ItemMapper.mapToItem(itemDto);
-        Item addedItem = itemService.addItem(userId, item);
-        log.info("Added new item name {} by user id {}", itemDto.getName(), userId);
-        return ItemMapper.mapToItemDto(addedItem);
+        log.debug("Adding new item");
+        return itemService.addItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(
+    public ItemResponseDto update(
             @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId,
             @PathVariable(name = "itemId") @Positive(message = "Item id must be a positive number") Long itemId,
-            @RequestBody @Validated(PatchUpdateGroup.class) ItemDto itemDto
+            @RequestBody @Validated ItemUpdateDto itemDto
     ) throws AccessDeniedException {
-        Item item = ItemMapper.mapToItem(itemDto);
-        Item updatedItem = itemService.updateItem(userId, itemId, item);
-        log.info("Updated item id {} by user id {}", updatedItem.getId(), userId);
-        return ItemMapper.mapToItemDto(updatedItem);
+        log.debug("Updating item");
+        return  itemService.updateItem(userId, itemId, itemDto);
     }
 
     @DeleteMapping("/{itemId}")
     public void delete(
             @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId,
             @PathVariable(name = "itemId") @Positive(message = "Item id must be a positive number") Long itemId
-    ) {
+    ) throws AccessDeniedException {
+        log.debug("Deleting item");
         itemService.deleteItem(userId, itemId);
-        log.info("Deleted item id {} by user id {}", itemId, userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getById(
+    public ItemWithBookingsAndComments getById(
+            @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId,
             @PathVariable(name = "itemId") @Positive(message = "Item id must be a positive number") Long itemId
     ) {
-        Item item = itemService.getItemById(itemId);
-        log.info("Received item: {}", item);
-        return ItemMapper.mapToItemDto(item);
-    }
-
-    @GetMapping
-    public List<ItemDto> getAll(
-            @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId
-    ) {
-        List<Item> items = itemService.getAllItems(userId);
-        log.info("Found {} items", items.size());
-        return items.stream()
-                .map(ItemMapper::mapToItemDto)
-                .toList();
+        log.debug("Retrieving item");
+        return itemService.getItemById(userId, itemId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(
+    public List<ItemResponseDto> search(
             @RequestParam String text
     ) {
-        List<Item> items = itemService.searchItems(text);
-        log.info("Found {} items by search text: '{}'", items.size(), text);
-        return items.stream()
-                .map(ItemMapper::mapToItemDto)
-                .toList();
+        log.debug("Searching items");
+        return itemService.searchItems(text);
+    }
+
+    @GetMapping
+    public List<ItemWithBookingsAndComments> getItemsForOwner(
+            @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId
+    ) {
+        log.debug("Searching items for owner");
+        return itemService.getItemForOwner(userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentResponseDto addComment(
+            @RequestHeader("X-Sharer-User-Id") @Positive(message = "User id must be a positive number") Long userId,
+            @PathVariable(name = "itemId") @Positive(message = "Item id must be a positive number") Long itemId,
+            @RequestBody CommentCreateDto comment
+    ) {
+        log.debug("Adding new comment");
+        return itemService.addComment(userId, itemId, comment);
     }
 }
