@@ -1,30 +1,20 @@
 package ru.practicum.shareit.item.mapper;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.shareit.item.dto.CommentCreateDto;
 import ru.practicum.shareit.item.dto.CommentResponseDto;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CommentMapper {
+@Mapper(componentModel = "spring")
+public interface CommentMapper {
 
-    public static Comment toComment(CommentCreateDto commentCreateDto, Item item, User author) {
-        return Comment.builder()
-                .text(commentCreateDto.getText())
-                .item(item)
-                .author(author)
-                .build();
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "created", ignore = true)
+    Comment toComment(CommentCreateDto commentCreateDto, Item item, User author);
 
-    public static CommentResponseDto toCommentResponseDto(Comment comment) {
-        return CommentResponseDto.builder()
-                .id(comment.getId())
-                .text(comment.getText())
-                .authorName(comment.getAuthor().getName())
-                .created(comment.getCreated())
-                .build();
-    }
+    @Mapping(target = "authorName", source = "author.name")
+    CommentResponseDto toCommentResponseDto(Comment comment);
 }

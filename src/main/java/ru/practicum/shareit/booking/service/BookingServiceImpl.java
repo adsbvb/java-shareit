@@ -28,9 +28,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
+
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final BookingMapper bookingMapper;
 
     @Override
     @Transactional
@@ -60,7 +62,7 @@ public class BookingServiceImpl implements BookingService {
         Booking savedBooking = bookingRepository.save(booking);
 
         log.info("booking saved: {}", savedBooking);
-        return BookingMapper.mapToBookingResponseDto(savedBooking);
+        return bookingMapper.toBookingResponseDto(savedBooking);
     }
 
     @Override
@@ -88,7 +90,7 @@ public class BookingServiceImpl implements BookingService {
         Booking savedBooking = bookingRepository.save(booking);
 
         log.info("booking updated: {}", savedBooking);
-        return BookingMapper.mapToBookingResponseDto(savedBooking);
+        return bookingMapper.toBookingResponseDto(savedBooking);
     }
 
     @Override
@@ -102,7 +104,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getBooker().getId().equals(userId) ||
             booking.getItem().getOwner().getId().equals(userId)) {
             log.info("booking getById: {}", bookingId);
-            return BookingMapper.mapToBookingResponseDto(booking);
+            return bookingMapper.toBookingResponseDto(booking);
         } else {
             throw new AccessDeniedException("Access denied!");
         }
@@ -120,7 +122,7 @@ public class BookingServiceImpl implements BookingService {
 
         log.info("bookings size: {}", bookings.size());
         return bookings.stream()
-                .map(BookingMapper::mapToBookingResponseDto)
+                .map(bookingMapper::toBookingResponseDto)
                 .toList();
     }
 
@@ -136,7 +138,7 @@ public class BookingServiceImpl implements BookingService {
 
         log.info("bookings size: {}", bookings.size());
         return bookings.stream()
-                .map(BookingMapper::mapToBookingResponseDto)
+                .map(bookingMapper::toBookingResponseDto)
                 .toList();
     }
 

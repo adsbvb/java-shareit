@@ -20,16 +20,18 @@ import java.util.List;
 @RequiredArgsConstructor
 @Validated
 public class UserController {
+
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @PostMapping
     public UserDto create(
             @RequestBody @Validated(CreateGroup.class) UserDto userDto
     ) {
-        User user = UserMapper.mapToUser(userDto);
+        User user = userMapper.toUser(userDto);
         User createdUser = userService.createUser(user);
         log.info("Created user with id {}", createdUser.getId());
-        return UserMapper.mapToDto(createdUser);
+        return userMapper.toUserDto(createdUser);
     }
 
     @PatchMapping("/{userId}")
@@ -37,10 +39,10 @@ public class UserController {
             @PathVariable(name = "userId") @Positive(message = "User id must be a positive number") Long userId,
             @RequestBody @Validated(PatchUpdateGroup.class) UserDto userDto
     ) {
-        User user = UserMapper.mapToUser(userDto);
+        User user = userMapper.toUser(userDto);
         User updatedUser = userService.updateUser(userId, user);
         log.info("Updated user with id {}", updatedUser.getId());
-        return UserMapper.mapToDto(updatedUser);
+        return userMapper.toUserDto(updatedUser);
     }
 
     @DeleteMapping("/{userId}")
@@ -57,7 +59,7 @@ public class UserController {
     ) {
         User user = userService.getUserById(userId);
         log.info("User with id {} was fetched", userId);
-        return UserMapper.mapToDto(user);
+        return userMapper.toUserDto(user);
     }
 
     @GetMapping
@@ -65,7 +67,7 @@ public class UserController {
         List<User> users = userService.getAllUser();
         log.info("Found {} users", users.size());
         return users.stream()
-                .map(UserMapper::mapToDto)
+                .map(userMapper::toUserDto)
                 .toList();
     }
 }
