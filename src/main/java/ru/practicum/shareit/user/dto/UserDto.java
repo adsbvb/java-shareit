@@ -26,6 +26,6 @@ public class UserDto {
 
     @NotBlank(groups = {CreateGroup.class}, message = "Email cannot be empty")
     @Email(groups = {CreateGroup.class, PatchUpdateGroup.class}, message = "Invalid email format")
-    @Size(max = 255, groups = {CreateGroup.class, PatchUpdateGroup.class}, message = "Email must not exceed 255 characters")
+    @Size(max = 512, groups = {CreateGroup.class, PatchUpdateGroup.class}, message = "Email must not exceed 512 characters")
     String email;
 }

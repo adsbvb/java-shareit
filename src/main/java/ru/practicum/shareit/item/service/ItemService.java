@@ -1,20 +1,22 @@
 package ru.practicum.shareit.item.service;
 
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.*;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface ItemService {
-    Item addItem(Long userId, Item item);
+    ItemResponseDto addItem(Long userId, ItemCreateDto dto);
 
-    Item updateItem(Long userId, Long itemId, Item item) throws AccessDeniedException;
+    ItemResponseDto updateItem(Long ownerId, Long itemId, ItemUpdateDto dto) throws AccessDeniedException;
 
-    void deleteItem(Long userId, Long itemId);
+    void deleteItem(Long userId, Long itemId) throws AccessDeniedException;
 
-    Item getItemById(Long itemId);
+    ItemWithBookingsAndComments getItemById(Long userId, Long itemId);
 
-    List<Item> getAllItems(Long userId);
+    List<ItemResponseDto> searchItems(String text);
 
-    List<Item> searchItems(String text);
+    List<ItemWithBookingsAndComments> getItemForOwner(Long ownerId);
+
+    CommentResponseDto addComment(Long authorId, Long itemId, CommentCreateDto commentCreateDto);
 }
