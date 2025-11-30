@@ -17,6 +17,8 @@ import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dal.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dal.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -40,6 +42,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper itemMapper;
     private final BookingMapper bookingMapper;
     private final CommentMapper commentMapper;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
@@ -48,7 +51,14 @@ public class ItemServiceImpl implements ItemService {
 
         User owner = existingUser(ownerId);
 
+        ItemRequest request = null;
+        if (itemCreateDto.getRequestId() != null) {
+            request = itemRequestRepository.findById(itemCreateDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Item Reqguest",  itemCreateDto.getRequestId()));
+        }
+
         Item item = itemMapper.toItem(itemCreateDto, owner);
+        item.setRequest(request);
         Item savedItem = itemRepository.save(item);
 
         log.info("Item with id: {} saved", savedItem.getId());

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
@@ -31,8 +32,10 @@ public class Item {
     @ToString.Exclude
     User owner;
 
-    @Column(name = "request_id")
-    Long requestId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "request_id")
+    @ToString.Exclude
+    ItemRequest request;
 
     @OneToMany(mappedBy = "item")
     @ToString.Exclude
