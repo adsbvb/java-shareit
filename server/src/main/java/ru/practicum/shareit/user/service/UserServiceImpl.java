@@ -50,7 +50,8 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            existingUser.setEmail(newEmail);
+            //existingUser.setEmail(newEmail);
+            existingUser.setEmail(userUpdateDto.getEmail().trim());
         }
 
         if (userUpdateDto.getName() != null && !userUpdateDto.getName().trim().isEmpty()) {
