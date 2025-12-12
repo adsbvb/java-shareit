@@ -179,17 +179,6 @@ class ItemControllerTest {
     }
 
     @Test
-    void search_EmptyText_ReturnsEmptyList() throws Exception {
-        when(itemService.searchItems(anyString()))
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/items/search")
-                        .param("text", ""))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
-    }
-
-    @Test
     void getItemsForOwner_ValidUserId_ReturnsItems() throws Exception {
         List<ItemWithBookingsAndComments> items = List.of(itemWithDetails);
 

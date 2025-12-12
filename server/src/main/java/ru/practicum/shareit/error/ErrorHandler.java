@@ -1,19 +1,14 @@
 package ru.practicum.shareit.error;
 
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.error.exception.NotFoundException;
 
 import java.nio.file.AccessDeniedException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -29,56 +24,6 @@ public class ErrorHandler {
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(final MethodArgumentNotValidException e) {
-        log.error("Validation error: " + e.getMessage());
-
-        Map<String, String> errors = new HashMap<>();
-        e.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = error instanceof FieldError
-                    ? ((FieldError) error).getField()
-                    : error.getObjectName();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        String message = "Validation failed for " + errors.size() + " field(s)";
-
-        ErrorResponse errorResponse = new ErrorResponse(
-                "Bad Request",
-                message,
-                HttpStatus.BAD_REQUEST.value()
-        );
-
-        errorResponse.setDetails(errors);
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(final ConstraintViolationException e) {
-        log.error("Constraint validation error: " + e.getMessage());
-
-        Map<String, String> errors = new HashMap<>();
-        e.getConstraintViolations().forEach((error) -> {
-            String fieldName = error.getPropertyPath().toString();
-            String errorMessage = error.getMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        String message = "Validation failed for " + errors.size() + " constraint(s)";
-
-        ErrorResponse errorResponse = new ErrorResponse(
-                "Bad Request",
-                message,
-                HttpStatus.BAD_REQUEST.value()
-        );
-
-        errorResponse.setDetails(errors);
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

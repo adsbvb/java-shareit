@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -152,7 +151,7 @@ public class BookingServiceImplIntegrationTest {
                 .item(item)
                 .build());
 
-        assertThrows(ValidationException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             bookingService.updateStatus(owner.getId(), approvedBooking.getId(), false);
         });
 
@@ -164,13 +163,13 @@ public class BookingServiceImplIntegrationTest {
                 .item(item)
                 .build());
 
-        assertThrows(ValidationException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             bookingService.updateStatus(owner.getId(), rejectedBooking.getId(), true);
         });
 
         try {
             bookingService.updateStatus(owner.getId(), approvedBooking.getId(), true);
-        } catch (ValidationException e) {
+        } catch (IllegalArgumentException e) {
             assertThat(e.getMessage()).contains("The reservation has already been processed");
             assertThat(e.getMessage()).contains("Current status: " + Status.APPROVED);
         }

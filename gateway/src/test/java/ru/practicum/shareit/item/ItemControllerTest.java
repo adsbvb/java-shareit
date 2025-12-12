@@ -16,7 +16,7 @@ import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -200,6 +200,16 @@ class ItemControllerTest {
         mockMvc.perform(get("/items/search")
                         .param("text", ""))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void search_EmptyText_ReturnsEmptyList() throws Exception {
+        mockMvc.perform(get("/items/search")
+                        .param("text", ""))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+
+        verify(itemClient, never()).searchItems(anyString());
     }
 
     @Test

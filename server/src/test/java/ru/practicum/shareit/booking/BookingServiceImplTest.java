@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -169,12 +168,12 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBooking_OwnerBookingOwnItem_ShouldThrowValidationException() {
-        when(userRepository.findById(2L)).thenReturn(Optional.of(owner)); // owner пытается забронировать
+    void addBooking_OwnerBookingOwnItem_ShouldThrowException() {
+        when(userRepository.findById(2L)).thenReturn(Optional.of(owner));
         when(itemRepository.findById(10L)).thenReturn(Optional.of(item));
 
         assertThatThrownBy(() -> bookingService.addBooking(2L, bookingRequestDto))
-                .isInstanceOf(ValidationException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Owner cannot be the same as booker");
 
         verify(userRepository, times(1)).findById(2L);
@@ -183,13 +182,13 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBooking_ItemNotAvailable_ShouldThrowValidationException() {
+    void addBooking_ItemNotAvailable_ShouldThrownException() {
         item.setAvailable(false);
         when(userRepository.findById(1L)).thenReturn(Optional.of(booker));
         when(itemRepository.findById(10L)).thenReturn(Optional.of(item));
 
         assertThatThrownBy(() -> bookingService.addBooking(1L, bookingRequestDto))
-                .isInstanceOf(ValidationException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Item is not available for booking");
 
         verify(userRepository, times(1)).findById(1L);
@@ -256,12 +255,12 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void updateStatus_StatusNotWaiting_ShouldThrowValidationException() {
+    void updateStatus_StatusNotWaiting_ShouldThrowException() {
         booking.setStatus(Status.APPROVED);
         when(bookingRepository.findByIdWithItemAndOwner(100L)).thenReturn(Optional.of(booking));
 
         assertThatThrownBy(() -> bookingService.updateStatus(2L, 100L, true))
-                .isInstanceOf(ValidationException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("The reservation has already been processed");
 
         verify(bookingRepository, times(1)).findByIdWithItemAndOwner(100L);

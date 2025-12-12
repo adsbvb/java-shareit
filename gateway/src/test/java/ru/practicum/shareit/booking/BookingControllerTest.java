@@ -102,19 +102,34 @@ public class BookingControllerTest {
 
     @Test
     void addBooking_InvalidBookingData_ReturnsBadRequest() throws Exception {
-        BookingRequestDto invalidDto = BookingRequestDto.builder()
+        BookingRequestDto invalidDtoStartPast = BookingRequestDto.builder()
                 .itemId(1L)
                 .start(LocalDateTime.now().minusDays(1))
                 .end(LocalDateTime.now().plusDays(1))
                 .build();
 
+        String invalidStartJson = objectMapper.writeValueAsString(invalidDtoStartPast);
+
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidStartJson))
+                .andExpect(status().isBadRequest());
+
+
+        BookingRequestDto invalidDtoEndPast = BookingRequestDto.builder()
+                .itemId(1L)
+                .start(LocalDateTime.now().plusDays(1))
+                .end(LocalDateTime.now().minusDays(1))
+                .build();
+
         try {
-            String invalidJson = objectMapper.writeValueAsString(invalidDto);
+            String invalidEndJson = objectMapper.writeValueAsString(invalidDtoEndPast);
 
             mockMvc.perform(post("/bookings")
                             .header("X-Sharer-User-Id", 1L)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(invalidJson))
+                            .content(invalidEndJson))
                     .andExpect(status().isBadRequest());
         } catch (Exception e) {
             System.out.println("Exception during serialization: " + e.getMessage());
@@ -272,6 +287,11 @@ public class BookingControllerTest {
     @Test
     void getBookingsByBooker_InvalidUserId_ReturnsBadRequest() throws Exception {
         mockMvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", -1L)
+                        .param("state", "ALL"))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", 0L)
                         .param("state", "ALL"))
                 .andExpect(status().isBadRequest());
@@ -307,6 +327,11 @@ public class BookingControllerTest {
 
     @Test
     void getBookingsByOwner_InvalidUserId_ReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", -1L)
+                        .param("state", "ALL"))
+                .andExpect(status().isBadRequest());
+
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", 0L)
                         .param("state", "ALL"))

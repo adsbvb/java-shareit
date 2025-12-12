@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.service;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,11 +43,11 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Item", bookingRequestDto.getItemId()));
 
         if (item.getOwner().getId().equals(bookerId)) {
-            throw new ValidationException("Owner cannot be the same as booker");
+            throw new IllegalArgumentException("Owner cannot be the same as booker");
         }
 
         if (!item.getAvailable()) {
-            throw new ValidationException("Item is not available for booking");
+            throw new IllegalArgumentException("Item is not available for booking");
         }
 
         Booking booking = Booking.builder()
@@ -78,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (booking.getStatus() != Status.WAITING) {
-            throw new ValidationException("The reservation has already been processed. Current status: " + booking.getStatus());
+            throw new IllegalArgumentException("The reservation has already been processed. Current status: " + booking.getStatus());
         }
 
         if (approved) {
@@ -160,7 +159,7 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 return bookingRepository.findAllByBookerIdAndStatus(bookerId, Status.REJECTED);
             default:
-                throw new ValidationException("Invalid state!");
+                throw new IllegalArgumentException("Invalid state!");
         }
     }
 
@@ -182,7 +181,7 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 return bookingRepository.findAllByOwnerIdAndStatus(ownerId, Status.REJECTED);
             default:
-                throw new ValidationException("Invalid state!");
+                throw new IllegalArgumentException("Invalid state!");
         }
     }
 

@@ -11,6 +11,8 @@ import ru.practicum.shareit.item.dto.CommentCreateDto;
 import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
+import java.util.Collections;
+
 
 @Slf4j
 @RestController
@@ -61,6 +63,9 @@ public class ItemController {
     public ResponseEntity<Object> searchItems(
             @RequestParam String text
     ) {
+        if (text.trim().isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
         log.info("Gateway: GET /items/search - search items with text: {}", text);
         return itemClient.searchItems(text);
     }

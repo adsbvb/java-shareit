@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -207,7 +206,7 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> userBookings = bookingRepository
                 .findByBookerIdAndItemIdAndEndBeforeAndStatus(authorId, itemId, LocalDateTime.now(), Status.APPROVED);
         if (userBookings.isEmpty()) {
-            throw new ValidationException("User " + authorId + " can only comment on items they have booked in the past");
+            throw new IllegalArgumentException("User " + authorId + " can only comment on items they have booked in the past");
         }
 
         Comment comment = commentMapper.toComment(commentCreateDto, item, author);

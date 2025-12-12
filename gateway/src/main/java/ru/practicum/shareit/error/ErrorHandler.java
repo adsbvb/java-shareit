@@ -8,28 +8,13 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.error.exception.NotFoundException;
 
-import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(final NotFoundException e) {
-        log.error("NotFoundException: " + e.getMessage());
-
-        ErrorResponse errorResponse = new ErrorResponse(
-                "Not Found",
-                e.getMessage(),
-                HttpStatus.NOT_FOUND.value()
-        );
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(final MethodArgumentNotValidException e) {
         log.error("Validation error: " + e.getMessage());
@@ -87,23 +72,10 @@ public class ErrorHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 "Bad Request",
                 e.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value()
+                HttpStatus.BAD_REQUEST.value()
         );
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(final AccessDeniedException e) {
-        log.error("Access denied: " + e.getMessage());
-
-        ErrorResponse errorResponse = new ErrorResponse(
-                "Forbidden",
-                e.getMessage(),
-                HttpStatus.FORBIDDEN.value()
-        );
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
